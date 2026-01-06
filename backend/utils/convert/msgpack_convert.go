@@ -2,6 +2,8 @@ package convutil
 
 import (
 	"encoding/json"
+	"reflect"
+
 	"github.com/vmihailenco/msgpack/v5"
 )
 
@@ -12,17 +14,15 @@ func (MsgpackConvert) Enable() bool {
 }
 
 func (c MsgpackConvert) Encode(str string) (string, bool) {
-	var obj map[string]any
+	var obj any
 	if err := json.Unmarshal([]byte(str), &obj); err == nil {
-		for k, v := range obj {
-			obj[k] = c.TryFloatToInt(v)
-		}
+		obj = c.TryFloatToInt(obj)
 		if b, err := msgpack.Marshal(obj); err == nil {
 			return string(b), true
 		}
 	}
 
-	if b, err := msgpack.Marshal(str); err != nil {
+	if b, err := msgpack.Marshal(str); err == nil {
 		return string(b), true
 	}
 
@@ -30,17 +30,16 @@ func (c MsgpackConvert) Encode(str string) (string, bool) {
 }
 
 func (MsgpackConvert) Decode(str string) (string, bool) {
-	var decodedStr string
-	if err := msgpack.Unmarshal([]byte(str), &decodedStr); err == nil {
-		return decodedStr, true
-	}
-
-	var obj map[string]any
+	var obj any
 	if err := msgpack.Unmarshal([]byte(str), &obj); err == nil {
-		if b, err := json.Marshal(obj); err == nil {
-			if len(b) >= 10 {
+		t := reflect.TypeOf(obj)
+		switch t.Kind() {
+		case reflect.Map, reflect.Slice, reflect.Array:
+			if b, err := json.Marshal(obj); err == nil {
 				return string(b), true
 			}
+		case reflect.String:
+			return obj.(string), true
 		}
 	}
 
