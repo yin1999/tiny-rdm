@@ -58,7 +58,7 @@ func encodeToRedisBitset(numbers []string) []byte {
 			continue
 		}
 		num, err := strconv.ParseUint(s, 10, 64)
-		if err != nil || num < 0 || num > math.MaxUint32 {
+		if err != nil || num > math.MaxUint32 {
 			fmt.Printf("Warning: skipping invalid number '%s': %v\n", s, err)
 			continue
 		}

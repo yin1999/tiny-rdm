@@ -3,6 +3,7 @@ package convutil
 import (
 	"encoding/json"
 	"reflect"
+	"strconv"
 
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -32,14 +33,22 @@ func (c MsgpackConvert) Encode(str string) (string, bool) {
 func (MsgpackConvert) Decode(str string) (string, bool) {
 	var obj any
 	if err := msgpack.Unmarshal([]byte(str), &obj); err == nil {
-		t := reflect.TypeOf(obj)
-		switch t.Kind() {
+		v := reflect.ValueOf(obj)
+		switch v.Type().Kind() {
 		case reflect.Map, reflect.Slice, reflect.Array:
 			if b, err := json.Marshal(obj); err == nil {
 				return string(b), true
 			}
 		case reflect.String:
 			return obj.(string), true
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			return strconv.FormatInt(v.Int(), 10), true
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			return strconv.FormatUint(v.Uint(), 10), true
+		case reflect.Float32, reflect.Float64:
+			return strconv.FormatFloat(v.Float(), 'f', -1, 64), true
+		case reflect.Bool:
+			return strconv.FormatBool(v.Bool()), true
 		}
 	}
 

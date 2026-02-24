@@ -2,8 +2,9 @@ package convutil
 
 import (
 	"bytes"
-	"github.com/pierrec/lz4/v4"
 	"io"
+
+	"github.com/pierrec/lz4/v4"
 )
 
 type LZ4Convert struct{}
@@ -16,12 +17,12 @@ func (LZ4Convert) Encode(str string) (string, bool) {
 	var compress = func(b []byte) (string, error) {
 		var buf bytes.Buffer
 		writer := lz4.NewWriter(&buf)
-		if _, err := writer.Write([]byte(str)); err != nil {
+		if _, err := writer.Write(b); err != nil {
 			writer.Close()
 			return "", err
 		}
 		writer.Close()
-		return string(buf.Bytes()), nil
+		return buf.String(), nil
 	}
 
 	if gzipStr, err := compress([]byte(str)); err == nil {

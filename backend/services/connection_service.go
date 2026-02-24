@@ -1,6 +1,7 @@
 package services
 
 import (
+	"archive/zip"
 	"context"
 	"crypto/tls"
 	"crypto/x509"
@@ -18,11 +19,10 @@ import (
 	"tinyrdm/backend/types"
 	_ "tinyrdm/backend/utils/proxy"
 
-	"github.com/klauspost/compress/zip"
 	"github.com/redis/go-redis/v9"
 	"github.com/vrischmann/userdir"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"github.com/xanzy/ssh-agent"
+	sshagent "github.com/xanzy/ssh-agent"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/proxy"
 )

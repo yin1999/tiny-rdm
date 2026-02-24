@@ -2,9 +2,10 @@ package convutil
 
 import (
 	"bytes"
-	"github.com/klauspost/compress/zstd"
 	"io"
 	"strings"
+
+	"github.com/klauspost/compress/zstd"
 )
 
 type ZStdConvert struct{}
@@ -20,12 +21,12 @@ func (ZStdConvert) Encode(str string) (string, bool) {
 		if err != nil {
 			return "", err
 		}
-		if _, err = writer.Write([]byte(str)); err != nil {
+		if _, err = writer.Write(b); err != nil {
 			writer.Close()
 			return "", err
 		}
 		writer.Close()
-		return string(buf.Bytes()), nil
+		return buf.String(), nil
 	}
 	if zstdStr, err := compress([]byte(str)); err == nil {
 		return zstdStr, true
