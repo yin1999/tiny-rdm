@@ -10,6 +10,7 @@ import (
 	"time"
 	"tinyrdm/backend/consts"
 	"tinyrdm/backend/types"
+	"tinyrdm/backend/utils/confdir"
 
 	"github.com/klauspost/compress/zip"
 )
